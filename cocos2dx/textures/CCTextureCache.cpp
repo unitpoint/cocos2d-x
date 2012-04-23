@@ -23,11 +23,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-
-#include <stack>
-#include <string>
-#include <cctype>
-#include <queue>
 #include "CCTextureCache.h"
 #include "CCTexture2D.h"
 #include "ccMacros.h"
@@ -40,7 +35,13 @@ THE SOFTWARE.
 #include "CCScheduler.h"
 #include "pthread.h"
 #include "CCThread.h"
-#include "semaphore.h"
+
+#include <pthread.h>
+#include <semaphore.h>
+#include <stack>
+#include <string>
+#include <cctype>
+#include <queue>
 
 namespace   cocos2d {
 
@@ -159,9 +160,10 @@ static CCTextureCache *g_sharedTextureCache;
 
 CCTextureCache * CCTextureCache::sharedTextureCache()
 {
-	if (!g_sharedTextureCache)
+	if (!g_sharedTextureCache){
 		g_sharedTextureCache = new CCTextureCache();
-
+		CCSharedFinalizer::atexit(CCTextureCache::purgeSharedTextureCache);
+	}
 	return g_sharedTextureCache;
 }
 
